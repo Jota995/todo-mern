@@ -50,7 +50,7 @@ class Task {
 
   async deleteTask(req, res) {
     try {
-      //await taskModel.findByIdAndDelete(req.params.id)
+      await taskModel.findByIdAndDelete(req.params.id)
       console.log(req.params.userId);
       console.log(req.params.id);
       await userModel.updateOne(
