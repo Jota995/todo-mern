@@ -1,28 +1,27 @@
 const taskModel = require("../models/task");
 const userModel = require("../models/user");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 class Task {
   async getAllTasks(req, res) {
-    const { userId } = req.params.userId;
-    const tasks = await taskModel.find({ userId });
+    const tasks = await taskModel.find({ userId: req.userId });
     res.json(tasks);
   }
 
   async createTask(req, res) {
     try {
-      const { task, userId } = req.body;
+      const { task } = req.body;
 
       if (!task) res.status(404).json("no task provided");
 
-      const newTask = new taskModel({ task });
+      const newTask = new taskModel({ task, userId: req.userId });
       await newTask.save();
       await userModel.findByIdAndUpdate(
-        { _id: userId },
+        { _id: req.userId },
         { $push: { todos: newTask._id } }
       );
 
-      res.status(200).json(newTask);
+      res.status(201).json(newTask);
     } catch (error) {
       console.error(error);
     }
@@ -30,19 +29,8 @@ class Task {
 
   async updateTask(req, res) {
     try {
-      await taskModel.findByIdAndUpdate({ _id: req.params.id }, req.body);
+      await taskModel.findByIdAndUpdate({ _id: req.params.taskId }, req.body);
       res.json({ message: "task updated successfully" });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async toggleComplete(req, res) {
-    try {
-      await taskModel.findByIdAndUpdate(req.params.id, {
-        isComplete: !req.body,
-      });
-      res.status(200).json({ message: "toggle task updated successfully" });
     } catch (error) {
       console.error(error);
     }
@@ -50,22 +38,25 @@ class Task {
 
   async deleteTask(req, res) {
     try {
-      await taskModel.findByIdAndDelete(req.params.id)
-      console.log(req.params.userId);
-      console.log(req.params.id);
+      await taskModel.findByIdAndDelete({ _id: req.params.taskId });
       await userModel.updateOne(
-        { _id: req.params.userId },
-        { $pull: { todos: mongoose.Types.ObjectId(req.params.id) } },
-        (err, val) => {
-          if(err){
-            console.error(err)
-          }
-          console.log(val);
-        }
+        { _id: req.userId },
+        { $pull: { todos: mongoose.Types.ObjectId(req.userId) } }
       );
       res.status(200).json({ message: "task delete successfully" });
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async toggleComplete(req, res) {
+    try {
+      await taskModel.findByIdAndUpdate(req.params.taskId, {
+        isComplete: !req.body,
+      });
+      res.status(200).json({ message: "toggle task updated successfully" });
+    } catch (error) {
+      console.error(error);
     }
   }
 }

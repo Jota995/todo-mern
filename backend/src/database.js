@@ -8,7 +8,7 @@ const connectDatabase =  async () =>{
             useCreateIndex:true,
             useUnifiedTopology: true,
             useNewUrlParser: true,
-            useFindAndModify: false
+            useFindAndModify: true
         })
         console.log(`database is connected to : ${db.connection.name}`);
 

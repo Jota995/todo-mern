@@ -1,4 +1,5 @@
 const userModel = require("../models/user");
+const jwt = require('jsonwebtoken')
 
 class User {
   async getAllUsers(req, res) {
@@ -22,9 +23,10 @@ class User {
   async createUser(req, res) {
     try {
       const { username, email, password } = req.body;
-      const newUser = new userModel({ username, email, password });
-      newUser.save();
-      res.json({message : 'user created successfully', data: newUser});
+      const newUser = new userModel({ username, email, password : await userModel.encryptPassword(password) });
+      console.log(newUser)
+      await newUser.save();
+      res.status(201).json({message : 'user created successfully', data: newUser});
     } catch (error) {
       console.error;
     }
@@ -38,6 +40,7 @@ class User {
       console.error(error);
     }
   }
+
 }
 
 module.exports = new User();
