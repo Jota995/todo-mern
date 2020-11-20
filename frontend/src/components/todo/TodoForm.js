@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import {toast} from 'react-toastify'
 import * as todoService from './todoService'
 
 const TodoForm = ({addTodo}) => {
@@ -13,14 +14,14 @@ const TodoForm = ({addTodo}) => {
 
   const handleSubmit = async (e) =>{
       e.preventDefault();
-      todo.userId = '5f9f3b826762f835b8d0d871'
-      const response = await todoService.createTask(todo)
-      if(response.status === 200){
+      const {token} = await JSON.parse(localStorage.getItem('authorization'))
+      const response = await todoService.createTask(todo,token)
+      if(response.status === 201){
         addTodo({_id:response.data._id, task: response.data.task , isComplete: response.data.isComplete})
         setTodo({...todo, task : ''})
-        alert('task created succesfully')
+        toast.success('task created succesfully')
       }else{
-        alert('the task could not be created')
+        toast.warning('the task could not be created')
       }
   }
 

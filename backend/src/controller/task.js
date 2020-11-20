@@ -51,9 +51,10 @@ class Task {
 
   async toggleComplete(req, res) {
     try {
-      await taskModel.findByIdAndUpdate(req.params.taskId, {
-        isComplete: !req.body,
+      const response = await taskModel.findOneAndUpdate(req.params.taskId, {
+        isComplete: !req.body.isComplete,
       });
+      console.log(response)
       res.status(200).json({ message: "toggle task updated successfully" });
     } catch (error) {
       console.error(error);

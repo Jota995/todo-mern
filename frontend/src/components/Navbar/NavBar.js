@@ -1,7 +1,18 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React  from "react";
+import { Link, useHistory } from "react-router-dom";
+import {toast} from 'react-toastify'
 
-const NavBar = ({ user }) => {
+const NavBar = ({setUsername, username}) => {
+
+  const history = useHistory()
+
+  const logout = () =>{
+    localStorage.removeItem('authorization')
+    toast.success('user logout successfully')
+    setUsername('')
+    history.push('/')
+  }
+
   const loginLink = (
     <li className="nav-item">
       <Link className="nav-link" to="/login">
@@ -28,13 +39,16 @@ const NavBar = ({ user }) => {
         aria-haspopup="true"
         aria-expanded="false"
       >
-        {user}
+        {username}
       </Link>
       <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-        <Link className="dropdown-item" to="#">
-          Account
+        <Link className="dropdown-item" to="/profile">
+          Profile
         </Link>
-        <Link className="dropdown-item" to="#">
+        <Link className="dropdown-item" to="/todos">
+          Tasks
+        </Link>
+        <Link className="dropdown-item" onClick={logout} to="#">
           Logout
         </Link>
       </div>
@@ -44,14 +58,13 @@ const NavBar = ({ user }) => {
   const isLogged = (user) => {
     if (user) {
       return userLink;
-    } else {
-      return (
-        <>
-          {registerLink} 
-          {loginLink}
-        </>
-      );
     }
+    return (
+      <React.Fragment>
+        {registerLink} 
+        {loginLink}
+      </React.Fragment>
+    );
   };
 
   return (
@@ -78,7 +91,7 @@ const NavBar = ({ user }) => {
                 About
               </Link>
             </li>
-            {isLogged(user)}
+            {isLogged(username)}
           </ul>
         </div>
       </div>

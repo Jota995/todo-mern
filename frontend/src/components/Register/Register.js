@@ -29,7 +29,7 @@ const Register = () => {
 
   return (
     <form className="card w-50 mx-auto" onSubmit={handleSubmit}>
-      <div className="card-header text-center">Signup</div>
+      <div className="card-header text-center"><h4>Register</h4></div>
       <div className="card-body">
         <div className="form-group">
           <label>User</label>
